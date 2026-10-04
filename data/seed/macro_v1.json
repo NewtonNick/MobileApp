@@ -1,0 +1,36 @@
+{
+  "model": "macro_v1",
+  "vintage": "2026-Q1",
+  "sources": [
+    {
+      "source": "BLS CPI-U",
+      "vintage": "2026-Q1",
+      "url": "https://fred.stlouisfed.org/series/CPIAUCSL",
+      "license": "U.S. government public domain"
+    },
+    {
+      "source": "FRED / BLS used vehicles CPI",
+      "vintage": "2026-Q1",
+      "url": "https://fred.stlouisfed.org/series/CUSR0000SETA02",
+      "license": "U.S. government public domain"
+    },
+    {
+      "source": "BLS CPI-U — inflation volatility and cited return tails for on-device paths",
+      "vintage": "2026-Q1",
+      "url": "https://fred.stlouisfed.org/series/CPIAUCSL",
+      "license": "U.S. government public domain"
+    }
+  ],
+  "cpiAnnual": 0.026,
+  "usedVehicleCpiAnnual": 0.01,
+  "equityVolAnnual": 0.16,
+  "bondVolAnnual": 0.06,
+  "crashJump": -0.20,
+  "upJump": 0.12,
+  "jumpChanceMonthly": 0.015,
+  "jobLossMonthlyChance": 0.004,
+  "raisePct": 0.10,
+  "cpiVolAnnual": 0.01,
+  "mortgageIndex": { "liberal": 0.035, "realistic": 0.045, "conservative": 0.06 },
+  "electricityPricePerKwh": 0.16
+}

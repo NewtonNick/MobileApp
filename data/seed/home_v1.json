@@ -1,0 +1,112 @@
+{
+  "model": "home_v1",
+  "vintage": "2026-Q1",
+  "sources": [
+    {
+      "source": "Census American Housing Survey — maintenance and repair expenditures by home age",
+      "vintage": "2023",
+      "url": "https://www.census.gov/programs-surveys/ahs.html",
+      "license": "U.S. government public domain"
+    },
+    {
+      "source": "FHFA House Price Index",
+      "vintage": "2026-Q1",
+      "url": "https://www.fhfa.gov/data/hpi",
+      "license": "U.S. government public domain"
+    },
+    {
+      "source": "FHFA House Price Index — crash/boom annual bands and metro mean-reversion (cited tails)",
+      "vintage": "2026-Q1",
+      "url": "https://www.fhfa.gov/data/hpi",
+      "license": "U.S. government public domain"
+    },
+    {
+      "source": "ASHRAE / DOE typical residential equipment useful lives (HVAC, water heater)",
+      "vintage": "2023",
+      "url": "https://www.energy.gov/energysaver/central-air-conditioning",
+      "license": "Attributed published useful-life tables"
+    },
+    {
+      "source": "NAHB / Harvard JCHS remodeling cost publications — attributed extract",
+      "vintage": "2024",
+      "url": "https://www.jchs.harvard.edu/",
+      "license": "Manual attributed extract of published ranges; not a live scrape"
+    }
+  ],
+  "fiveYearRepairPctOfValue": {
+    "liberal": 0.02,
+    "realistic": 0.0375,
+    "conservative": 0.06
+  },
+  "ageBuckets": [
+    {
+      "minAge": 0,
+      "maxAge": 10,
+      "annualMaintPctOfValue": { "liberal": 0.004, "realistic": 0.006, "conservative": 0.01 }
+    },
+    {
+      "minAge": 11,
+      "maxAge": 25,
+      "annualMaintPctOfValue": { "liberal": 0.006, "realistic": 0.0075, "conservative": 0.012 }
+    },
+    {
+      "minAge": 26,
+      "maxAge": 40,
+      "annualMaintPctOfValue": { "liberal": 0.008, "realistic": 0.01, "conservative": 0.015 }
+    },
+    {
+      "minAge": 41,
+      "maxAge": 200,
+      "annualMaintPctOfValue": { "liberal": 0.01, "realistic": 0.012, "conservative": 0.02 }
+    }
+  ],
+  "systems": [
+    {
+      "key": "roof",
+      "label": "Roof replacement",
+      "usefulLifeYears": 25,
+      "replacement": { "liberal": 8000, "realistic": 14000, "conservative": 22000 },
+      "source": "NAHB / JCHS attributed extract",
+      "vintage": "2024"
+    },
+    {
+      "key": "hvac",
+      "label": "HVAC replacement",
+      "usefulLifeYears": 18,
+      "replacement": { "liberal": 5000, "realistic": 8500, "conservative": 14000 },
+      "source": "ASHRAE / DOE useful life + JCHS ranges",
+      "vintage": "2023"
+    },
+    {
+      "key": "water_heater",
+      "label": "Water heater replacement",
+      "usefulLifeYears": 12,
+      "replacement": { "liberal": 900, "realistic": 1600, "conservative": 2800 },
+      "source": "DOE water heater life + published install ranges",
+      "vintage": "2023"
+    }
+  ],
+  "zipRegions": [
+    { "prefix": "100", "region": "New York metro", "hpiAnnual": { "liberal": 0.05, "realistic": 0.035, "conservative": 0.01 }, "medianHomeValue": 720000 },
+    { "prefix": "021", "region": "Boston metro", "hpiAnnual": { "liberal": 0.048, "realistic": 0.034, "conservative": 0.01 }, "medianHomeValue": 680000 },
+    { "prefix": "303", "region": "Atlanta metro", "hpiAnnual": { "liberal": 0.055, "realistic": 0.04, "conservative": 0.012 }, "medianHomeValue": 380000 },
+    { "prefix": "331", "region": "Miami metro", "hpiAnnual": { "liberal": 0.06, "realistic": 0.042, "conservative": 0.01 }, "medianHomeValue": 520000 },
+    { "prefix": "606", "region": "Chicago metro", "hpiAnnual": { "liberal": 0.04, "realistic": 0.03, "conservative": 0.008 }, "medianHomeValue": 320000 },
+    { "prefix": "770", "region": "Houston metro", "hpiAnnual": { "liberal": 0.045, "realistic": 0.032, "conservative": 0.008 }, "medianHomeValue": 310000 },
+    { "prefix": "802", "region": "Denver metro", "hpiAnnual": { "liberal": 0.05, "realistic": 0.036, "conservative": 0.01 }, "medianHomeValue": 560000 },
+    { "prefix": "850", "region": "Phoenix metro", "hpiAnnual": { "liberal": 0.052, "realistic": 0.038, "conservative": 0.008 }, "medianHomeValue": 430000 },
+    { "prefix": "900", "region": "Los Angeles metro", "hpiAnnual": { "liberal": 0.05, "realistic": 0.036, "conservative": 0.01 }, "medianHomeValue": 850000 },
+    { "prefix": "902", "region": "Los Angeles metro", "hpiAnnual": { "liberal": 0.05, "realistic": 0.036, "conservative": 0.01 }, "medianHomeValue": 920000 },
+    { "prefix": "941", "region": "San Francisco metro", "hpiAnnual": { "liberal": 0.048, "realistic": 0.034, "conservative": 0.008 }, "medianHomeValue": 1300000 },
+    { "prefix": "981", "region": "Seattle metro", "hpiAnnual": { "liberal": 0.05, "realistic": 0.036, "conservative": 0.01 }, "medianHomeValue": 780000 }
+  ],
+  "national": {
+    "hpiAnnual": { "liberal": 0.045, "realistic": 0.032, "conservative": 0.008 },
+    "medianHomeValue": 420000,
+    "region": "United States"
+  },
+  "hpiCrashAnnual": { "liberal": -0.05, "realistic": -0.12, "conservative": -0.20 },
+  "hpiBoomAnnual": { "liberal": 0.12, "realistic": 0.08, "conservative": 0.04 },
+  "hpiMeanReversionHalfLifeYears": 8,
+  "hpiVolAnnual": 0.06
+}

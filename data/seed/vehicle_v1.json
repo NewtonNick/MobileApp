@@ -1,0 +1,117 @@
+{
+  "model": "vehicle_v1",
+  "vintage": "2025",
+  "sources": [
+    {
+      "source": "AAA Your Driving Costs — maintenance and operating averages by vehicle class",
+      "vintage": "2024",
+      "url": "https://newsroom.aaa.com/wp-content/uploads/2024/08/YDC-Final-1.pdf",
+      "license": "Attributed published annual tables"
+    },
+    {
+      "source": "BLS motor vehicle maintenance CPI",
+      "vintage": "2026-Q1",
+      "url": "https://fred.stlouisfed.org/series/CUUR0000SETD",
+      "license": "U.S. government public domain"
+    },
+    {
+      "source": "EPA fueleconomy.gov year/make/model class mapping",
+      "vintage": "2025",
+      "url": "https://www.fueleconomy.gov/feg/ws/",
+      "license": "U.S. government public domain"
+    }
+  ],
+  "byClass": [
+    {
+      "class": "car",
+      "annualMaintenance": { "liberal": 1200, "realistic": 1950, "conservative": 2800 },
+      "annualDepreciationPct": { "liberal": 0.1, "realistic": 0.15, "conservative": 0.22 }
+    },
+    {
+      "class": "suv",
+      "annualMaintenance": { "liberal": 1400, "realistic": 2200, "conservative": 3200 },
+      "annualDepreciationPct": { "liberal": 0.11, "realistic": 0.16, "conservative": 0.23 }
+    },
+    {
+      "class": "truck",
+      "annualMaintenance": { "liberal": 1600, "realistic": 2400, "conservative": 3500 },
+      "annualDepreciationPct": { "liberal": 0.12, "realistic": 0.17, "conservative": 0.24 }
+    },
+    {
+      "class": "van",
+      "annualMaintenance": { "liberal": 1400, "realistic": 2100, "conservative": 3000 },
+      "annualDepreciationPct": { "liberal": 0.11, "realistic": 0.16, "conservative": 0.23 }
+    },
+    {
+      "class": "ev",
+      "annualMaintenance": { "liberal": 700, "realistic": 1100, "conservative": 1700 },
+      "annualDepreciationPct": { "liberal": 0.14, "realistic": 0.2, "conservative": 0.28 }
+    },
+    {
+      "class": "motorcycle",
+      "annualMaintenance": { "liberal": 400, "realistic": 700, "conservative": 1200 },
+      "annualDepreciationPct": { "liberal": 0.08, "realistic": 0.12, "conservative": 0.18 }
+    },
+    {
+      "class": "rv",
+      "annualMaintenance": { "liberal": 1800, "realistic": 2800, "conservative": 4200 },
+      "annualDepreciationPct": { "liberal": 0.1, "realistic": 0.15, "conservative": 0.22 }
+    }
+  ],
+  "ageMultipliers": [
+    { "minAge": 0, "maxAge": 3, "multiplier": 0.75 },
+    { "minAge": 4, "maxAge": 8, "multiplier": 1.0 },
+    { "minAge": 9, "maxAge": 14, "multiplier": 1.25 },
+    { "minAge": 15, "maxAge": 40, "multiplier": 1.55 }
+  ],
+  "mileageMultipliers": [
+    { "minMiles": 0, "maxMiles": 40000, "multiplier": 0.85 },
+    { "minMiles": 40001, "maxMiles": 90000, "multiplier": 1.0 },
+    { "minMiles": 90001, "maxMiles": 140000, "multiplier": 1.2 },
+    { "minMiles": 140001, "maxMiles": 400000, "multiplier": 1.45 }
+  ],
+  "catalog": [
+    { "year": 2016, "make": "Honda", "model": "Civic", "class": "car", "mpg": 32 },
+    { "year": 2017, "make": "Honda", "model": "Civic", "class": "car", "mpg": 32 },
+    { "year": 2018, "make": "Honda", "model": "Civic", "class": "car", "mpg": 32 },
+    { "year": 2019, "make": "Honda", "model": "Civic", "class": "car", "mpg": 32 },
+    { "year": 2020, "make": "Honda", "model": "Civic", "class": "car", "mpg": 33 },
+    { "year": 2021, "make": "Honda", "model": "Civic", "class": "car", "mpg": 33 },
+    { "year": 2022, "make": "Honda", "model": "Civic", "class": "car", "mpg": 33 },
+    { "year": 2023, "make": "Honda", "model": "Civic", "class": "car", "mpg": 33 },
+    { "year": 2024, "make": "Honda", "model": "Civic", "class": "car", "mpg": 33 },
+    { "year": 2018, "make": "Honda", "model": "Accord", "class": "car", "mpg": 30 },
+    { "year": 2020, "make": "Honda", "model": "Accord", "class": "car", "mpg": 30 },
+    { "year": 2022, "make": "Honda", "model": "CR-V", "class": "suv", "mpg": 30 },
+    { "year": 2018, "make": "Toyota", "model": "Camry", "class": "car", "mpg": 32 },
+    { "year": 2020, "make": "Toyota", "model": "Camry", "class": "car", "mpg": 32 },
+    { "year": 2022, "make": "Toyota", "model": "Camry", "class": "car", "mpg": 32 },
+    { "year": 2018, "make": "Toyota", "model": "Corolla", "class": "car", "mpg": 34 },
+    { "year": 2021, "make": "Toyota", "model": "Corolla", "class": "car", "mpg": 35 },
+    { "year": 2020, "make": "Toyota", "model": "RAV4", "class": "suv", "mpg": 30 },
+    { "year": 2023, "make": "Toyota", "model": "RAV4", "class": "suv", "mpg": 30 },
+    { "year": 2019, "make": "Toyota", "model": "Highlander", "class": "suv", "mpg": 24 },
+    { "year": 2018, "make": "Ford", "model": "F-150", "class": "truck", "mpg": 20 },
+    { "year": 2021, "make": "Ford", "model": "F-150", "class": "truck", "mpg": 22 },
+    { "year": 2023, "make": "Ford", "model": "F-150", "class": "truck", "mpg": 22 },
+    { "year": 2020, "make": "Ford", "model": "Escape", "class": "suv", "mpg": 28 },
+    { "year": 2019, "make": "Chevrolet", "model": "Silverado", "class": "truck", "mpg": 19 },
+    { "year": 2022, "make": "Chevrolet", "model": "Equinox", "class": "suv", "mpg": 28 },
+    { "year": 2018, "make": "Nissan", "model": "Altima", "class": "car", "mpg": 32 },
+    { "year": 2021, "make": "Nissan", "model": "Rogue", "class": "suv", "mpg": 30 },
+    { "year": 2020, "make": "Subaru", "model": "Outback", "class": "suv", "mpg": 29 },
+    { "year": 2022, "make": "Subaru", "model": "Forester", "class": "suv", "mpg": 29 },
+    { "year": 2019, "make": "Jeep", "model": "Grand Cherokee", "class": "suv", "mpg": 21 },
+    { "year": 2021, "make": "Jeep", "model": "Wrangler", "class": "suv", "mpg": 20 },
+    { "year": 2018, "make": "Hyundai", "model": "Elantra", "class": "car", "mpg": 33 },
+    { "year": 2022, "make": "Hyundai", "model": "Tucson", "class": "suv", "mpg": 29 },
+    { "year": 2020, "make": "Kia", "model": "Sorento", "class": "suv", "mpg": 26 },
+    { "year": 2023, "make": "Tesla", "model": "Model 3", "class": "ev", "kwhPerMile": 0.25 },
+    { "year": 2021, "make": "Tesla", "model": "Model Y", "class": "ev", "kwhPerMile": 0.28 },
+    { "year": 2022, "make": "Harley-Davidson", "model": "Sportster", "class": "motorcycle", "mpg": 48 },
+    { "year": 2019, "make": "Winnebago", "model": "Minnie", "class": "rv", "mpg": 10 },
+    { "year": 2017, "make": "Honda", "model": "Odyssey", "class": "van", "mpg": 22 },
+    { "year": 2020, "make": "Chrysler", "model": "Pacifica", "class": "van", "mpg": 22 },
+    { "year": 2019, "make": "Ram", "model": "1500", "class": "truck", "mpg": 21 }
+  ]
+}

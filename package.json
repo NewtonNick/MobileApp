@@ -1,0 +1,23 @@
+{
+  "name": "asset-aware",
+  "private": true,
+  "workspaces": [
+    "apps/mobile",
+    "packages/forecast-engine"
+  ],
+  "scripts": {
+    "mobile": "npm run start --workspace=apps/mobile",
+    "test:engine": "npm test --workspace=packages/forecast-engine",
+    "test:mobile": "npm test --workspace=apps/mobile",
+    "test:sync": "tsx --test apps/mobile/src/plaid/sync-decision.test.ts",
+    "test": "npm run test:engine && npm run test:mobile && npm run test:sync",
+    "typecheck": "npm run typecheck --workspace=packages/forecast-engine && npm run typecheck --workspace=apps/mobile",
+    "lint": "npm run lint --workspace=apps/mobile",
+    "test:py": "pytest apps/plaid-api",
+    "check": "npm run typecheck && npm run lint && npm test && npm run test:py",
+    "etl": "python packages/data-etl/run.py"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15"
+  }
+}

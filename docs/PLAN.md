@@ -24,7 +24,7 @@ isProject: false
 ---
 
 > Snapshot of the original Cursor plan (all steps, R1–R17, week sequence). Copied into this repo so it is not only under `%USERPROFILE%\.cursor\plans\`.
-> The YAML todos above mean “scaffolded in code,” not “verified on a device.” **Living contract:** [DESIGN.md](./DESIGN.md). **What is left:** [STATUS.md](./STATUS.md).
+> The YAML todos above mean “scaffolded in code,” not “verified on a device.” Current tickets are [WORK.md](./WORK.md). Deferred work is [BACKLOG.md](./BACKLOG.md).
 
 # Asset-Aware Finance App: Revised Plan
 

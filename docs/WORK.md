@@ -1,6 +1,6 @@
 # Asset Aware — in-scope work
 
-Tickets for **current MVP**. Deferred ideas stay in [BACKLOG.md](./BACKLOG.md). Contract: [DESIGN.md](./DESIGN.md). Built vs verified: [STATUS.md](./STATUS.md).
+Tickets for **current MVP**. Deferred ideas stay in [BACKLOG.md](./BACKLOG.md). A row is done when its done-when is true in code. Device QA is Track A and stays pending until there is a recorded emulator pass.
 
 Statuses: `pending` | `in-progress` | `done` | `blocked`.
 
@@ -15,7 +15,7 @@ Does not block Track B unless the APK cannot boot.
 | ID | Work | Done when | Status |
 | --- | --- | --- | --- |
 | A1 | Boot Pixel_8_API_36, debug APK, one four-field Realistic forecast | Screenshot of first sentence on emulator | pending |
-| A2 | Walk R1–R17 on device (Not sure, vehicle search, debt-link, cash vs illiquid, backup, Preview isolation) | Failures logged in STATUS; pass/fail per ID | pending |
+| A2 | Walk R1–R17 on device (Not sure, vehicle search, debt-link, cash vs illiquid, backup, Preview isolation) | Pass/fail per ID recorded on this ticket | pending |
 | A3 | Existing done-whens still unproven: completeness chip, same-bill prompt in UI, stale-cash 30-day banner, 14-day backup banner, notify caps, vintage on risk cards, 18-month seed banner | Each checked on emulator | pending |
 
 ---
@@ -51,7 +51,7 @@ Ship order. Each ticket is one PR-sized slice. Living = recompute on household s
 | ID | Work | Done when | Status |
 | --- | --- | --- | --- |
 | G1 | Plaid sidecar frozen — no new routes, no household in FastAPI | README + `apps/plaid-api` unchanged for this wave | done |
-| G2 | No persisted forecast / standing cache / `reservedCash` as books | Code review against DESIGN engine API | done |
+| G2 | No persisted forecast / standing cache / `reservedCash` as books | Household JSON has none of those fields | done |
 | G3 | Standing never behind a paywall | Homepage has no Plus gate | done |
 
 ---
@@ -75,7 +75,7 @@ G1–G3 throughout
 
 ---
 
-## Track D — finish first-pass (refine B/C to DESIGN)
+## Track D — finish first-pass
 
 B and C are in code. This track makes those screens match the contract instead of dumping a form. Founder owns Track A.
 

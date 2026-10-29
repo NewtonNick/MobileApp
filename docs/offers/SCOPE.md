@@ -1,6 +1,6 @@
 # Offer fit — engine scope
 
-Scoped 2026-10-03. Amended the same day by the council at the bottom of this file, and by the audit in [IMPLEMENTATION.md](./IMPLEMENTATION.md), which owns ticket order and the Plaid dependency. **Not promoted.** Those verdicts amend this scope. They do not amend [DESIGN.md](../DESIGN.md). Standing, Decide, and the bank link do not wait on it.
+Scoped 2026-10-03. Amended the same day by the council at the bottom of this file, and by the audit in [IMPLEMENTATION.md](./IMPLEMENTATION.md), which owns ticket order and the Plaid dependency. **Not promoted.** Those verdicts amend this scope. They do not change the shipped planner. Standing, Decide, and the bank link do not wait on it.
 
 A lawyer reviews [the draft addendum](../legal/offers.md) before any offer link ships.
 

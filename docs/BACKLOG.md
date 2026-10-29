@@ -1,9 +1,7 @@
 # Asset Aware — backlog
 
-Single catalog of work that is **not MVP**. If an idea is not in [DESIGN.md](./DESIGN.md) as a current contract and not here, add it here the same turn it appears.
+Single catalog of work that is **not MVP**. If an idea is not already a ticket in [WORK.md](./WORK.md) and not here, add it here the same turn it appears.
 
-**Contract:** [DESIGN.md](./DESIGN.md)  
-**What is built:** [STATUS.md](./STATUS.md)  
 **In-scope tickets:** [WORK.md](./WORK.md)  
 **Complaint build order:** [BUILDOUT.md](./BUILDOUT.md) (Q01–Q05)
 
@@ -14,9 +12,9 @@ Statuses:
 - `out-of-scope` — not this product; do not staff
 - `cut` — considered and rejected as a first-class job
 
-When you promote an item into the current build, move it to DESIGN (screens / engine API) and mark it `promoted` here with a date.
+When you promote an item into the current build, move the ticket into [WORK.md](./WORK.md) and mark it `promoted` here with a date.
 
-**Coverage, 2026-09-29.** The founder wants market share, so the books are semi-exhaustive of one household’s finances. A missing fact that changes the hired date or leftover is this product. See DESIGN “Coverage”. Rows under Out of scope stay other businesses until promoted.
+**Coverage, 2026-09-29.** The founder wants market share, so the books are semi-exhaustive of one household’s finances. A missing fact that changes the hired date or leftover is this product. Rows under Out of scope stay other businesses until promoted.
 
 ---
 
@@ -48,7 +46,7 @@ These are the deferred FIRE / goal extras. They sit on the same household books 
 | L8 | Preview as a goal costume | Business | promoted 2026-09-07 — preview badge names the hire |
 | L9 | Goal-language notifications | Business drop as need | promoted 2026-09-07 — pulse names the hire |
 | L10 | Accounts UX as “improve this job” polish | Business | promoted 2026-09-07 |
-| L11 | Next-best-question weighted by jobClass | DESIGN R1 remainder | promoted 2026-09-07 — cadence/partner probes; fuller ranking later |
+| L11 | Next-best-question weighted by jobClass | R1 | promoted 2026-09-07 — cadence/partner probes; fuller ranking later |
 | L12 | Partner income as second stream (no spouse login) | Validators later | promoted 2026-09-07 — `partnerMonthlyIncome` |
 | L13 | Decision lab ranker | Founder 2026-09-29 | promoted 2026-09-29 — `/decide`. Discrete clones ranked by the featured hired month, then rechecked on harder years. Fan does not pick the row. |
 
@@ -61,7 +59,7 @@ These are the deferred FIRE / goal extras. They sit on the same household books 
 | D1 | Play Store listing of the standing sentence | Validators | Blocked on screenshot-able standing. |
 | D2 | Play Billing module | Engineers | Pipe is in the app (`expo-iap`). Price comes from Play products `bank_link_annual` and `bank_link_monthly`. Standing stays free. The bank link locks only after Play returns a price and this phone has no plan. |
 | D3 | Steal-at-the-event GTM (first-repair, car-due, house-then-FIRE) | Validators Expansionist | Not “another budget app.” |
-| D4 | EAS init / store AAB | STATUS | Required for iOS from Windows. |
+| D4 | EAS init / store AAB | store | Required for iOS from Windows. |
 | D5 | Privacy policy / store launch legal | PLAN | promoted 2026-09-07 — in-app `/privacy`; hosted URL still later |
 
 ---
@@ -70,11 +68,11 @@ These are the deferred FIRE / goal extras. They sit on the same household books 
 
 | ID | Item | Source | Notes |
 | --- | --- | --- | --- |
-| P1 | Prove vault restore on a device | STATUS §2 | SQLCipher is on in the native build. Release builds fail closed without it. Backup files are scrypt AES-256-GCM. XOR and PBKDF2 files open only through Import old backup. Remaining: export, wipe, and import on a device. |
-| P2 | Plaid Link in the Android dev client | STATUS §3 | In progress with the budget slice. Sandbox cannot write the real household. Link failure must not wipe the ledger. Rebuild the dev client so the Link SDK is in the binary. |
-| P3 | Plaid Trial (≤10 Items), founder then maybe household | DESIGN R17 | Current live-bank step. Trial uses the production host. Paid Production is the rollout step (O11), after the per-Item fee is read. |
-| P4 | iOS via EAS | STATUS §6 | Apple Developer account. |
-| P5 | Tickers / live prices | STATUS §6 | Ticker *label* promoted 2026-09-07. Tax lots the user types promoted 2026-09-29. No live price feed. |
+| P1 | Prove vault restore on a device | device | SQLCipher is on in the native build. Release builds fail closed without it. Backup files are scrypt AES-256-GCM. XOR and PBKDF2 files open only through Import old backup. Remaining: export, wipe, and import on a device. |
+| P2 | Plaid Link in the Android dev client | device | In progress with the budget slice. Sandbox cannot write the real household. Link failure must not wipe the ledger. Rebuild the dev client so the Link SDK is in the binary. |
+| P3 | Plaid Trial (≤10 Items), founder then maybe household | PLAN R17 | Current live-bank step. Trial uses the production host. Paid Production is the rollout step (O11), after the per-Item fee is read. |
+| P4 | iOS via EAS | store | Apple Developer account. |
+| P5 | Tickers / live prices | product | Ticker *label* promoted 2026-09-07. Tax lots the user types promoted 2026-09-29. No live price feed. |
 | P6 | Paid TCO / shop-quote APIs | SOURCES | After the product earns it. |
 | P7 | Seed refresh / ETL on a schedule | PLAN | 18-month banner is R14 now. |
 | P8 | Monte Carlo fan polish (Victory/Skia) | PLAN | promoted 2026-09-07 — sparkline. **promoted 2026-09-07 (quarter)** — Victory Native + Skia path/fan/waterfall/timeline. Fan band still Compare → Advanced. |
@@ -95,13 +93,13 @@ Sequence and done-whens are in [BUILDOUT.md](./BUILDOUT.md). Do them in order. T
 | Q04 | SQLite encrypted at rest | Points at P1. After Q03. |
 | Q05 | Store listing before a price | Points at D1 and U1. Price stays unset until the Plaid per-Item fee is known. |
 
-Bill negotiation, a second login, live prices, an envelope home, a chat assistant, and a credit pull stay in Out of scope and in DESIGN. They are not Q tickets.
+Bill negotiation, a second login, live prices, an envelope home, a chat assistant, and a credit pull stay in Out of scope. They are not Q tickets.
 
 ---
 
 ## Out of scope
 
-Do not staff. If a request matches one of these, point here instead of adding a screen. A household fact that changes the date or leftover is Coverage in DESIGN, including when it was absent from the original MVP list.
+Do not staff. If a request matches one of these, point here instead of adding a screen. A household fact that changes the date or leftover is in bounds, including when it was absent from the original MVP list.
 
 | ID | Item | Why |
 | --- | --- | --- |
@@ -109,7 +107,7 @@ Do not staff. If a request matches one of these, point here instead of adding a 
 | O2 | Spouse login / second household identity | One household, US ZIP. |
 | O3 | Tax return | A brokerage lot and a sale quote are in. A return, wash sales, state tax, and the 3.8% investment-income tax are not. |
 | O4 | Insurance shopping | Shop quotes. |
-| O5 | Buy-this-house vs that house | Out of DESIGN. Z is keep/delay/downsize on *this* house only. |
+| O5 | Buy-this-house vs that house | Z is keep/delay/downsize on *this* house only. |
 | O6 | Web app as product | Web preview is localStorage only. |
 | O7 | LLM / receipts / OCR | Original thesis week-7; still out. |
 | O8 | Non-USD | Later national USD is not this either. |
@@ -124,6 +122,6 @@ Do not staff. If a request matches one of these, point here instead of adding a 
 
 ## How to add an idea
 
-1. Check DESIGN (is it already MVP?).
+1. Check [WORK.md](./WORK.md) (is it already a ticket?).
 2. If not, add a row here with `later`, `unresolved`, or `out-of-scope`.
 3. Do not invent a new status. Do not hide items only in chat.

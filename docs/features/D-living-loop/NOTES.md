@@ -4,7 +4,7 @@
 
 ## Intent
 
-B and C shipped as form dumps. This track makes the living loop match DESIGN: one next fact, change hire without wipe, Preview does not silently replace real books.
+B and C shipped as form dumps. This track makes the living loop match the product rules: one next fact, change hire without wipe, Preview does not silently replace real books.
 
 ## What changed
 

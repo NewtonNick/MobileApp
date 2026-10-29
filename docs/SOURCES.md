@@ -2,8 +2,7 @@
 
 ## Product documents
 
-- [DESIGN.md](./DESIGN.md) is the contract. [STATUS.md](./STATUS.md) is remaining work.
-- Pricing and competitor strategy stay outside this repo.
+Pricing and competitor strategy stay outside this repo. In-scope tickets are [WORK.md](./WORK.md). Deferred work is [BACKLOG.md](./BACKLOG.md).
 
 ## Seed tables we ship
 

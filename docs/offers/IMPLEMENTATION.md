@@ -1,6 +1,6 @@
 # Debt data and offer fit — implementation plan
 
-Written 2026-10-03. **Backlog only. Pending Plaid.** Nothing here is promoted into [DESIGN.md](../DESIGN.md). Backlog rows: P10, U4, U5 in [BACKLOG.md](../BACKLOG.md).
+Written 2026-10-03. **Backlog only. Pending Plaid.** Nothing here is part of the shipped planner. Backlog rows: P10, U4, U5 in [BACKLOG.md](../BACKLOG.md).
 
 This plan joins three pieces that were discussed separately the same day:
 

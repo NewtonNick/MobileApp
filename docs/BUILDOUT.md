@@ -2,12 +2,11 @@
 
 Build order for the complaints that are still this product. Checked 2026-09-27 against public reviews and help docs from Mint’s aftermath, YNAB, Monarch, Copilot, Simplifi, Rocket Money, Empower, ProjectionLab, Boldin, and Actual Budget.
 
-**Contract:** [DESIGN.md](./DESIGN.md)  
 **Catalog:** [BACKLOG.md](./BACKLOG.md) rows Q01–Q05  
 **In-scope MVP:** [WORK.md](./WORK.md) — do not move these rows there  
 **Scored table:** the finance-app-complaints canvas
 
-People leave these apps when the link lies, the same dollar is counted twice, or leftover cash is not actually free. Transfers, card payments, and a card paid off every month are already kept out of a second living expense. Reserved versus leftover is the home sentence. This file is the trust work. How much of a household’s money the books hold is the Coverage decision in [DESIGN.md](./DESIGN.md).
+People leave these apps when the link lies, the same dollar is counted twice, or leftover cash is not actually free. Transfers, card payments, and a card paid off every month are already kept out of a second living expense. Reserved versus leftover is the home sentence. This file is the trust work. How much of a household’s money the books hold follows the coverage rule in [BACKLOG.md](./BACKLOG.md).
 
 Do the tickets in order. A later ticket does not start because an earlier one is unpleasant.
 
@@ -42,7 +41,7 @@ Do not rebuild these. A complaint that matches a row here is a device-QA miss or
 - A trial Item updates the real household. Sandbox still cannot.
 - Killing the sidecar mid-sync leaves the previous books.
 - The budget and holdings screens say the link is stale after 30 days, and they do not show zeros for the gap.
-- Link failure does not wipe the ledger (DESIGN R17).
+- Link failure does not wipe the ledger.
 
 **Files.** `apps/mobile/src/app/plaid.tsx`, `apps/mobile/src/plaid/sync-on-open.tsx`, `apps/mobile/src/app/(tabs)/budget.tsx`, `packages/forecast-engine/src/budget.ts`.
 
@@ -136,4 +135,4 @@ Do not staff. Point at [BACKLOG.md](./BACKLOG.md).
 | Live performance and Morningstar | P5. A ticker is a label. There is no live price. A brokerage tax lot is a basis, a date, and a price the user types. |
 | Envelopes as the home | O1. Category plans are allowed. The home stays the hired date. |
 | A chat that explains the month | O7. Looks-wrong and the one-month spending comparison are the explanation. |
-| A credit score | DESIGN: a credit pull stays out. |
+| A credit score | A credit pull stays out. |

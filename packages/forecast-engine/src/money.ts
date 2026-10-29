@@ -12,6 +12,10 @@ export function clamp(n: number, lo: number, hi: number): number {
   return Math.min(hi, Math.max(lo, n));
 }
 
+export function leftoverOf(liquid: number, reserved: number): number {
+  return Math.max(0, liquid - reserved);
+}
+
 export function formatUsd(n: number): string {
   const sign = n < 0 ? '-' : '';
   const abs = Math.abs(Math.round(n));

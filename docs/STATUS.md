@@ -32,7 +32,7 @@ Android Studio, OpenJDK 21, the SDK, and a **Pixel_8_API_36** emulator are insta
 
 Product tickets through Track E (except Plaid) are in [WORK.md](./WORK.md). Founder device QA is Track A there.
 
-Do the Android daily loop (below) in parallel unless [DESIGN.md](./DESIGN.md) cut-order says otherwise. SQLCipher at-rest, Plaid Link, EAS, and store listing are [BACKLOG.md](./BACKLOG.md), not this list.
+Do the Android daily loop (below) in parallel unless [DESIGN.md](./DESIGN.md) cut-order says otherwise. Plaid Link, EAS, and store listing are [BACKLOG.md](./BACKLOG.md), not this list. SQLCipher is already in the native build.
 
 ### 1. Make the Android build the daily loop
 
@@ -42,9 +42,9 @@ Do the Android daily loop (below) in parallel unless [DESIGN.md](./DESIGN.md) cu
 - Walk R1–R17 on the emulator (four-field forecast, Not sure, vehicle search, debt-link, cash homepage vs illiquid tab, backup, Preview isolation).
 - Do **not** use Expo Go.
 
-### 2. Close the vault gap (plan promised encryption)
+### 2. Prove the vault on a device
 
-- Backup files are AES-256-GCM. Remaining: replace plain `expo-sqlite` with SQLCipher-class storage (op-sqlite or equivalent).
+- Backup files are AES-256-GCM with a scrypt passphrase. SQLCipher encrypts the database file when the build provides it. Release builds fail closed without it.
 - Prove: export → wipe app → import restores the same household and seed vintage.
 
 ### 3. Plaid on a device

@@ -1,10 +1,7 @@
-import { drizzle } from 'drizzle-orm/expo-sqlite';
 import * as Crypto from 'expo-crypto';
 import * as FileSystem from 'expo-file-system/legacy';
 import { defaultDatabaseDirectory, deleteDatabaseSync, openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 
-import * as schema from '@/db/schema';
-import { deleteEnrolledDevice } from '@/plaid/device-delete';
 import { VaultKeyMissing } from '@/vault/errors';
 import { looksSealed, openText, sealText } from '@/vault/seal';
 import { clearVaultSecrets, loadDbKey, saveDbKey } from '@/vault/secure';
@@ -312,11 +309,6 @@ async function cancelScheduledNotifications(): Promise<void> {
 
 /** Close the file, delete every vault file, and clear SecureStore. A new key is not minted here. */
 export async function eraseVault(): Promise<void> {
-  try {
-    await deleteEnrolledDevice();
-  } catch {
-    /* the sidecar can be gone; the phone still erases */
-  }
   await cancelScheduledNotifications();
   if (db) {
     try {
@@ -369,8 +361,4 @@ export function kvSetMany(entries: { key: string; value: string }[]): boolean {
 
 export function kvDelete(key: string): void {
   getDb().runSync('DELETE FROM kv WHERE key = ?', key);
-}
-
-export function getDrizzle() {
-  return drizzle(getDb(), { schema });
 }

@@ -43,7 +43,7 @@ import type {
 } from './types';
 import { isCompleteCustomSpec, parseGoalSpec, presetGoalSpec, syncFocusJob } from './goals';
 import { migrateHousehold } from './migrate';
-import { offsetToMonthKey } from './month';
+import { offsetToMonthKey, parseMonthKey } from './month';
 import { HOUSEHOLD_SCHEMA_VERSION, isLiquid } from './types';
 import { parseStoredGainRate, parseTaxLots } from './taxlots';
 
@@ -291,7 +291,8 @@ function clampUnit(value: unknown): number | null {
 }
 
 function monthOrNull(value: unknown): string | null {
-  return typeof value === 'string' && /^\d{4}-\d{2}$/.test(value) ? value : null;
+  if (typeof value !== 'string' || !parseMonthKey(value)) return null;
+  return value.trim();
 }
 
 function monthOrLegacy(at: unknown, legacy: unknown, now: Date): string | null {

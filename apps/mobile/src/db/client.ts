@@ -30,7 +30,3 @@ export function kvSetMany(entries: { key: string; value: string }[]): boolean {
 export function kvDelete(key: string): void {
   memory.delete(key);
 }
-
-export function getDrizzle(): never {
-  throw new Error('Drizzle/SQLite is native-only');
-}

@@ -1,5 +1,4 @@
 export type {
-  EventTimelineProps,
   FanChartProps,
   OverlayCompareChartProps,
   OverlayView,
@@ -12,12 +11,12 @@ export type {
 } from './types';
 
 export {
-  EventTimeline,
   FanChart,
   OverlayCompareChart,
   PathChart,
   ScenarioLinesChart,
-  WaterfallChart,
-} from './Canvas';
+} from './line-charts';
+
+export { WaterfallChart } from './fallback';
 
 export { ChartChoices, overlayViews, pathViews, scenarioViews, waterfallViews } from './choices';

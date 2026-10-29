@@ -1,8 +1,7 @@
 import { plannedEvents, WALKER_HORIZON_MONTHS, walkForecast, identityShocks } from './drivers';
-import { clamp } from './money';
+import { clamp, leftoverOf } from './money';
 import { monthlyRate } from './rates';
 import type { PathShocks } from './drivers';
-import { leftoverOf } from './leftover';
 import { homePathParams, macroParams, pickTriple, resolveGeo } from './lookups';
 import type { SeedBundle } from './seed-types';
 import type { EventHit, HouseholdInput, MonteCarloFan } from './types';

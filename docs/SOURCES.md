@@ -12,7 +12,7 @@ Versioned JSON in `data/seed/`. The app imports that folder directly.
 | File | What | Citations |
 | --- | --- | --- |
 | `home_v1.json` | 5-year repair %, age buckets, roof/HVAC/WH lives, ZIP/metro HPI, crash/boom paths, mean-reversion half-life | Census AHS 2023, FHFA HPI 2026-Q1 (incl. GFC-like / expansion analogs), ASHRAE/DOE lives, NAHB/JCHS attributed extract |
-| `vehicle_v1.json` | Class maintenance, depreciation, age/mileage multipliers, YMM catalog | AAA Your Driving Costs 2024, BLS vehicle maintenance CPI, EPA fueleconomy.gov |
+| `vehicle_v1.json` | Class maintenance, depreciation, age/mileage multipliers, year/make/model catalog for model years 2000 through the latest EPA year | AAA Your Driving Costs 2024 class ranges (repair dollars stay class ranges, not a shop quote), BLS vehicle maintenance CPI, EPA fueleconomy.gov (one row per year, make, and model) |
 | `macro_v1.json` | CPI-U, used-vehicle CPI, equity/bond vol, crash/up jump sizes, unemployment/raise rates | FRED / BLS; long-run US vol as attributed extract (not live prices) |
 
 Loan APRs when the user skips: labeled typicals in `packages/forecast-engine/src/rates.ts` (mortgage ~6.5% Realistic, auto ~7%, student ~6.5%, card ~22%). Conservative is a harder year (higher rate). These are not lender quotes and are not in the seed tables. User-entered `apr` always wins.

@@ -1,13 +1,11 @@
-# Public cost-data ETL
+# Seed refresh
 
-Builds versioned seed JSON in `data/seed/` from official downloads and attributed published tables.
+Restamps `data/seed/*.json`. It does not download the FHFA, AHS, or AAA tables those files cite. The app and the engine tests load the JSON directly.
 
 ```bash
 python packages/data-etl/run.py
 ```
 
-Requires Python 3.12+ and `pip install -r packages/data-etl/requirements.txt`.
+Python 3.12+. The script uses the standard library only.
 
-If a download fails, the script keeps the existing attributed seed and prints the error. It never scrapes sites that forbid it.
-
-Optional `FRED_API_KEY` refreshes CPI series. EPA vehicles refresh the catalog via fueleconomy.gov.
+Optional `FRED_API_KEY` updates the CPI fields in `macro_v1.json`. Without it, the script fills missing volatility fields and stamps a vintage. The EPA download collapses `vehicles.csv` into one year/make/model row per model year from 2000 through the latest year in the file. If that download fails, the existing catalog stays.

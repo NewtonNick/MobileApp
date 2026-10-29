@@ -22,14 +22,6 @@ export type WaterfallChartProps = {
   view?: WaterfallView;
 };
 
-export type TimelineEvent = { key: string; month: number; cost: number; label: string };
-
-export type EventTimelineProps = {
-  events: TimelineEvent[];
-  horizon?: number;
-  onSelect?: (key: string) => void;
-};
-
 export type ScenarioView = 'together' | 'separate' | 'gap' | 'slope';
 
 export type ScenarioLinesChartProps = {
@@ -60,4 +52,3 @@ export type OverlayCompareChartProps = {
 };
 
 export const CHART_HEIGHT = 208;
-export const HORIZON_MONTHS = 60;

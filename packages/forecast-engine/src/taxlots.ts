@@ -1,4 +1,5 @@
 import { cents } from './money';
+import { daysInMonth, parseIsoDate, utcDayNumber, type DateParts } from './month';
 import { isLiquid, type AccountInput, type HouseholdInput, type MonthPoint, type TaxLot } from './types';
 
 /**
@@ -64,29 +65,8 @@ export interface BrokerageGainSlice {
 
 export type BrokerageLotStanding = 'none' | 'unpriced' | 'taxed';
 
-interface DateParts {
-  y: number;
-  m: number;
-  d: number;
-}
-
-function daysInMonth(year: number, month: number): number {
-  return new Date(Date.UTC(year, month, 0)).getUTCDate();
-}
-
-export function parseIsoDate(value: string): DateParts | null {
-  if (typeof value !== 'string') return null;
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.slice(0, 10));
-  if (!match) return null;
-  const y = Number(match[1]);
-  const m = Number(match[2]);
-  const d = Number(match[3]);
-  if (m < 1 || m > 12 || d < 1 || d > daysInMonth(y, m)) return null;
-  return { y, m, d };
-}
-
 function utcDay(parts: DateParts): number {
-  return Math.floor(Date.UTC(parts.y, parts.m - 1, parts.d) / 86_400_000);
+  return utcDayNumber(parts.y, parts.m, parts.d);
 }
 
 function fromUtcDay(day: number): DateParts {

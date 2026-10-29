@@ -116,7 +116,7 @@ Category budgets and the Trial bank link are in the product. Envelope-as-the-hom
 | E7 | Preview costume wears the hired job; accounts framed as improve-this-job; ticker label only | L8/L10/P5 | homepage, accounts, `preview.ts` | Preview badge names the hire; ticker has no live price | done |
 | E8 | Goal-language pulse; next-best includes cadence/partner | L9/L11 | `notifications.ts`, `jobs.ts`, improve | Stale copy names the hire; Skip on partner writes 0 | done |
 | E9 | Advanced fan sparkline; in-app privacy screen | P8/D5 | `compare.tsx`, `privacy.tsx` | Fan still Compare → Advanced; More has Privacy | done |
-| E10 | Backup AES-256-GCM (v2); v1 XOR still decrypts | P1 slice | `vault/crypto.ts`, backup | New files `alg: aes-256-gcm`; old files open | done |
+| E10 | Backup AES-256-GCM, scrypt passphrase (v3) | P1 slice | `vault/crypto.ts`, backup | New files are scrypt v3. XOR and PBKDF2 open only through Import old backup | done |
 
 G1 still holds: no new Plaid routes.
 

@@ -23,6 +23,7 @@ export type OnboardingDraft = {
   skipHouse: boolean;
   carQuery: string;
   carValue: string;
+  carMileage: string;
   carClass: VehicleClass;
   skipCar: boolean;
   cash: string;

@@ -4,7 +4,7 @@ import { formatUsd } from '@asset-aware/forecast-engine';
 import { useColors } from '@/ui/appearance';
 import { Meta } from '@/ui/primitives';
 
-import { HORIZON_MONTHS, type EventTimelineProps, type WaterfallChartProps } from './types';
+import { type WaterfallChartProps } from './types';
 
 export function WaterfallChart({ slices, accent, onSelect, view = 'dollars' }: WaterfallChartProps) {
   const colors = useColors();
@@ -72,53 +72,7 @@ export function WaterfallChart({ slices, accent, onSelect, view = 'dollars' }: W
   );
 }
 
-export function EventTimeline({ events, horizon = HORIZON_MONTHS, onSelect }: EventTimelineProps) {
-  const colors = useColors();
-  const recurring = events.some((e) => e.month === -1);
-  const discrete = events.filter((e) => e.month >= 1 && e.month <= horizon);
-  return (
-    <View style={styles.stack}>
-      {recurring ? <View style={[styles.dash, { borderColor: colors.muted }]} /> : null}
-      <View style={[styles.track, { borderBottomColor: colors.line }]}>
-        {Array.from({ length: horizon }, (_, i) => {
-          const month = i + 1;
-          const hit = discrete.find((e) => e.month === month);
-          return (
-            <Pressable
-              key={month}
-              onPress={() => hit && onSelect?.(hit.key)}
-              style={styles.slot}
-            >
-              <View
-                style={[
-                  styles.dot,
-                  hit ? { backgroundColor: hit.cost > 0 ? colors.danger : colors.muted } : styles.dotOff,
-                ]}
-              />
-            </Pressable>
-          );
-        })}
-      </View>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   stack: { gap: 6 },
   barTrack: { height: 8, width: '100%', borderRadius: 4, overflow: 'hidden' },
-  track: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 28,
-    borderBottomWidth: 1,
-  },
-  slot: { flex: 1, alignItems: 'center', justifyContent: 'center', height: 28 },
-  dot: { width: 6, height: 6, borderRadius: 3 },
-  dotOff: { backgroundColor: 'transparent' },
-  dash: {
-    height: 1,
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    opacity: 0.5,
-  },
 });

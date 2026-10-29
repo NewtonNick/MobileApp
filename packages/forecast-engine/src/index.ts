@@ -37,7 +37,6 @@ export * from './engine';
 export * from './overlays';
 export * from './amort';
 export * from './preview';
-export * from './fixtures/households';
 export * from './goals';
 export * from './standing';
 export * from './sequence';
@@ -61,4 +60,3 @@ export type {
   WalkResult,
   WalkerState,
 } from './drivers';
-export { gaussian, mulberry32 } from './montecarlo';

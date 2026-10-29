@@ -2,6 +2,7 @@ import { amortizeMonth } from './amort';
 import { extraIncomeForMonth, ownIncomeForMonth, partnerIncomeForMonth, plannedRaiseFactor } from './cadence';
 import { expenseCountsInLiving, isRentExpense } from './expenses';
 import { amortizingPayment, loanMonthPlan, remainingTermMonths } from './loan-terms';
+import { postsIncome } from './jobs';
 import { capMonthlyDeferral } from './limits';
 import { round2 } from './money';
 import { resolvedMonthIndex } from './month';
@@ -173,14 +174,6 @@ function ownsVehicle(h: HouseholdInput): boolean {
   return hasVehicle(h);
 }
 
-function hasIncome(h: HouseholdInput): boolean {
-  return (
-    (h.monthlyIncome ?? 0) > 0 ||
-    (h.partnerMonthlyIncome ?? 0) > 0 ||
-    (h.extraIncomes ?? []).some((row) => row.amount > 0)
-  );
-}
-
 function hasLiquid(h: HouseholdInput): boolean {
   return h.accounts.some((a) => isLiquid(a.type));
 }
@@ -290,7 +283,7 @@ function ownScale(ctx: DriverContext, month: number): number {
 const incomeDriver: Driver = {
   id: 'income',
   field: 'monthlyIncome',
-  applies: hasIncome,
+  applies: postsIncome,
   init: noop,
   step: (state, ctx) => {
     const infl = inflator(ctx, state.month);
@@ -703,11 +696,21 @@ function sameName(a: string | null | undefined, b: string | null | undefined): b
   return (a ?? '').trim().toLowerCase() === (b ?? '').trim().toLowerCase();
 }
 
-function catalogMpg(car: AssetInput, bundle: SeedBundle): number | null {
-  const row = bundle.vehicle.catalog.find(
+function catalogMatch(car: AssetInput, bundle: SeedBundle) {
+  if (car.vehicleYear == null || !car.make || !car.model) return undefined;
+  return bundle.vehicle.catalog.find(
     (item) => item.year === car.vehicleYear && sameName(item.make, car.make) && sameName(item.model, car.model),
   );
-  return row?.mpg != null && row.mpg > 0 ? row.mpg : null;
+}
+
+function catalogMpg(car: AssetInput, bundle: SeedBundle): number | null {
+  const mpg = catalogMatch(car, bundle)?.mpg;
+  return mpg != null && mpg > 0 ? mpg : null;
+}
+
+function catalogKwh(car: AssetInput, bundle: SeedBundle): number | null {
+  const kwh = catalogMatch(car, bundle)?.kwhPerMile;
+  return kwh != null && kwh > 0 ? kwh : null;
 }
 
 export function vehicleRunningCost(car: AssetInput, bundle: SeedBundle, fuelPrice?: number | null): VehicleRunningCost {
@@ -725,8 +728,9 @@ export function vehicleRunningCost(car: AssetInput, bundle: SeedBundle, fuelPric
       fuelEstimated: false,
     };
   }
-  if (car.vehicleClass === 'ev') {
-    const kwh = car.kwhPerMile != null && car.kwhPerMile > 0 ? car.kwhPerMile : VEHICLE_COST_ESTIMATES.kwhPerMile;
+  if (vehicleClassOf(car, bundle.vehicle) === 'ev') {
+    const typedKwh = car.kwhPerMile != null && car.kwhPerMile > 0 ? car.kwhPerMile : null;
+    const kwh = typedKwh ?? catalogKwh(car, bundle) ?? VEHICLE_COST_ESTIMATES.kwhPerMile;
     const miles = car.milesPerYear ?? VEHICLE_COST_ESTIMATES.milesPerYear;
     const price = bundle.macro.electricityPricePerKwh ?? VEHICLE_COST_ESTIMATES.electricityPricePerKwh;
     return {

@@ -725,5 +725,3 @@ export function OverlayCompareChart({
     </View>
   );
 }
-
-export { WaterfallChart, EventTimeline } from './fallback';

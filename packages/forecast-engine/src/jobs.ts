@@ -93,6 +93,7 @@ function electedSpecs(h: HouseholdInput): { job: JobClass; spec?: GoalSpec | nul
   return [{ job: h.jobClass, spec: h.goalSpec ?? null }];
 }
 
+/** Monthly take-home. A yearly or one-time extra does not date the plan. */
 function hasIncome(h: HouseholdInput): boolean {
   if (h.monthlyIncome != null && h.monthlyIncome > 0) return true;
   if (h.partnerMonthlyIncome != null && h.partnerMonthlyIncome > 0) return true;
@@ -101,6 +102,15 @@ function hasIncome(h: HouseholdInput): boolean {
 
 export function householdHasIncome(h: HouseholdInput): boolean {
   return hasIncome(h);
+}
+
+/**
+ * Income driver. Any extra with an amount still posts when take-home is missing,
+ * including a March bonus on a household whose paycheck is 0.
+ */
+export function postsIncome(h: HouseholdInput): boolean {
+  if (householdHasIncome(h)) return true;
+  return (h.extraIncomes ?? []).some((row) => row.amount > 0);
 }
 
 /** Facts the books have, but not enough to use. */

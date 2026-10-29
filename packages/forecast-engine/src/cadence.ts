@@ -1,4 +1,4 @@
-import { resolvedMonthIndex, utcDayNumber } from './month';
+import { parseIsoDate, resolvedMonthIndex, utcDayNumber } from './month';
 import type { ExtraIncomeInput, HouseholdInput, PaycheckCadence, RaiseEarner } from './types';
 import { DEFAULT_PAYCHECK_CADENCE } from './types';
 
@@ -31,10 +31,9 @@ function paychecksInCalendarMonth(cadence: PaycheckCadence, monthIndex: number, 
 }
 
 function parseIsoDay(iso: string): Date | null {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso.trim());
-  if (!match) return null;
-  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
-  return Number.isFinite(date.getTime()) ? date : null;
+  const parts = parseIsoDate(iso.trim());
+  if (!parts) return null;
+  return new Date(parts.y, parts.m - 1, parts.d);
 }
 
 function monthWindow(now: Date, monthIndex: number): { start: Date; end: Date } {

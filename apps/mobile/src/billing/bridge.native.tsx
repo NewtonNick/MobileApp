@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Platform } from 'react-native';
+import { LogBox, Platform } from 'react-native';
 import { ErrorCode, useIAP, type ProductSubscription } from 'expo-iap';
 
 import {
@@ -14,6 +14,16 @@ import {
   type StorePlan,
 } from '@/billing/plans';
 import { getBillingSnapshot, registerBillingActions, setBillingSnapshot } from '@/billing/state';
+
+// expo-iap logs these with console.error before the promise rejects. The bridge
+// already marks Play unavailable, including on an emulator with no Play Store.
+LogBox.ignoreLogs([
+  '[Expo-IAP] Error fetching products',
+  '[Expo-IAP] Error getting active subscriptions',
+  '[Expo-IAP] initConnection failed',
+]);
+
+let playCatalogRequested = false;
 
 function toStorePlan(product: ProductSubscription | undefined, id: BankPlanId): StorePlan | null {
   if (!product) return null;
@@ -56,26 +66,20 @@ export function BillingBridge() {
   }, []);
 
   useEffect(() => {
-    if (!connected || queried) return;
-    let live = true;
+    if (!connected || playCatalogRequested) return;
+    playCatalogRequested = true;
     void Promise.all([
       fetchProducts({ skus: [...BANK_PLAN_IDS], type: 'subs' }),
       getActiveSubscriptions([...BANK_PLAN_IDS]),
     ])
-      .then(() => {
-        if (live) setQueried(true);
-      })
+      .then(() => setQueried(true))
       .catch(() => {
-        if (!live) return;
         setBillingSnapshot({
           availability: 'unavailable',
           notice: 'Play Billing did not respond. The date is still here.',
         });
       });
-    return () => {
-      live = false;
-    };
-  }, [connected, fetchProducts, getActiveSubscriptions, queried]);
+  }, [connected, fetchProducts, getActiveSubscriptions]);
 
   useEffect(() => {
     if (!queried) return;

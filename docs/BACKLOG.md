@@ -70,7 +70,7 @@ These are the deferred FIRE / goal extras. They sit on the same household books 
 
 | ID | Item | Source | Notes |
 | --- | --- | --- | --- |
-| P1 | SQLCipher / real backup crypto | STATUS §2, Engineers | Backup AES-256-GCM promoted 2026-09-07. SQLite at-rest still expo-sqlite. |
+| P1 | Prove vault restore on a device | STATUS §2 | SQLCipher is on in the native build. Release builds fail closed without it. Backup files are scrypt AES-256-GCM. XOR and PBKDF2 files open only through Import old backup. Remaining: export, wipe, and import on a device. |
 | P2 | Plaid Link in the Android dev client | STATUS §3 | In progress with the budget slice. Sandbox cannot write the real household. Link failure must not wipe the ledger. Rebuild the dev client so the Link SDK is in the binary. |
 | P3 | Plaid Trial (≤10 Items), founder then maybe household | DESIGN R17 | Current live-bank step. Trial uses the production host. Paid Production is the rollout step (O11), after the per-Item fee is read. |
 | P4 | iOS via EAS | STATUS §6 | Apple Developer account. |

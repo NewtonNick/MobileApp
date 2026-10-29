@@ -360,7 +360,7 @@ function createStyles(colors: Palette) {
   });
   return StyleSheet.create({
   screen: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: colors.bg,
     paddingHorizontal: 20,
     paddingTop: space.sm,

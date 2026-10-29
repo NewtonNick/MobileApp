@@ -23,7 +23,7 @@ import {
   runwayNeed,
   selectedLiabilities,
 } from './goals';
-import { leftoverOf } from './leftover';
+import { leftoverOf } from './money';
 import { addMonths as addCalendarMonths, monthKeyFromIndex, monthLabel, parseIsoDate } from './month';
 import { intakeGap, resolveHasVehicle, resolveHousingTenure } from './jobs';
 import { resolveGeo, seedIsStale } from './lookups';
@@ -104,9 +104,10 @@ function isoDay(d: Date): string {
   return `${d.getFullYear()}-${month}-${day}`;
 }
 
-function parseIsoLocal(iso: string): Date {
-  const [year, month, day] = iso.split('-').map(Number);
-  return new Date(year, (month ?? 1) - 1, day ?? 1);
+function parseIsoLocal(iso: string): Date | null {
+  const parts = parseIsoDate(iso.slice(0, 10));
+  if (!parts) return null;
+  return new Date(parts.y, parts.m - 1, parts.d);
 }
 
 function nextDiscreteHit(events: EventHit[]): EventHit | null {
@@ -621,7 +622,7 @@ function composeSentence(
       ? `${title} is not in the next 30 years on these numbers`
       : hiredMonth === 0
         ? `${title} looks on track now`
-        : `${title} around ${monthLabel(hiredDate ? parseIsoLocal(hiredDate) : walkerMonthDate(now, hiredMonth))}`;
+        : `${title} around ${monthLabel((hiredDate && parseIsoLocal(hiredDate)) || walkerMonthDate(now, hiredMonth))}`;
   return `${when}. ${cashLine}. ${constraint}.`;
 }
 
@@ -741,8 +742,8 @@ function headlineFor(view: StandingView, spec: GoalSpec, metric: { current: numb
     return 'Not dated yet';
   }
   if (view.hiredDate) {
-    const when = parseIsoLocal(view.hiredDate).toLocaleString('en-US', { month: 'short', year: 'numeric' });
-    return `Around ${when}`;
+    const when = parseIsoLocal(view.hiredDate);
+    if (when) return `Around ${when.toLocaleString('en-US', { month: 'short', year: 'numeric' })}`;
   }
   return `In about ${view.hiredMonth} month${view.hiredMonth === 1 ? '' : 's'}`;
 }

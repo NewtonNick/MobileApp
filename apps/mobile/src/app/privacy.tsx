@@ -19,8 +19,8 @@ export default function PrivacyScreen() {
         choose. If you forget the PIN and have no backup, the household cannot be opened.
       </Body>
       <Body>
-        Erase everything deletes the books and secrets on this phone, and asks the bank-link service to drop this
-        device when that service is configured.
+        Erase everything deletes the books and secrets on this phone. It does not call the bank-link service. Device
+        enrollment is not built.
       </Body>
       <Body>ZIP is only for public cost tables. The app does not ask for a street address or a VIN.</Body>
       <Body>
@@ -32,7 +32,7 @@ export default function PrivacyScreen() {
         not stored in the household file. Erase everything does not cancel that subscription.
       </Body>
       <Body>The app is for adults 18 and older. Erase everything is how you delete what is stored here.</Body>
-      <Meta>Same text as docs/legal/privacy.md. A lawyer should review it before a store listing.</Meta>
+      <Meta>A shorter notice than docs/legal/privacy.md. A lawyer should review both before a store listing.</Meta>
       <Button label="Terms" tone="ghost" onPress={() => router.push('/terms' as Href)} />
       <Button label="Back" tone="ghost" onPress={() => router.back()} />
     </Screen>

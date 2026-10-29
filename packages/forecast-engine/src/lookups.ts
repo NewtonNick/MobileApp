@@ -1,5 +1,6 @@
-import type { HomeSeed, SeedBundle, VehicleSeed } from './seed-types';
+import type { HomeSeed, SeedBundle, VehicleCatalogRow, VehicleSeed } from './seed-types';
 import type { AssetInput, PercentileTriple, Scenario, SourceRef, VehicleClass } from './types';
+import { parseYear } from './validate';
 
 export function pickTriple(t: PercentileTriple, scenario: Scenario): number {
   return t[scenario];
@@ -167,16 +168,92 @@ export function vehicleMaintMultiplier(seed: VehicleSeed, age: number | null, mi
   return Math.min(m, 1.75);
 }
 
+function vehicleLabel(row: VehicleCatalogRow): string {
+  return `${row.year} ${row.make} ${row.model}`.toLowerCase();
+}
+
+/** An empty box matches nothing, so the form does not list a default make. */
 export function searchVehicles(seed: VehicleSeed, query: string, limit = 12) {
   const q = query.trim().toLowerCase();
-  if (!q) return seed.catalog.slice(0, limit);
-  const parts = q.split(/\s+/);
-  return seed.catalog
-    .filter((row) => {
-      const hay = `${row.year} ${row.make} ${row.model}`.toLowerCase();
-      return parts.every((p) => hay.includes(p));
-    })
-    .slice(0, limit);
+  if (!q) return [];
+  const parts = q.split(/\s+/).filter(Boolean);
+  const years = parts.filter((part) => /^\d{4}$/.test(part)).map((part) => Number(part));
+  const hits = seed.catalog.filter((row) => {
+    const hay = vehicleLabel(row);
+    return parts.every((part) => hay.includes(part));
+  });
+  hits.sort((a, b) => {
+    const aExact = years.includes(a.year) ? 0 : 1;
+    const bExact = years.includes(b.year) ? 0 : 1;
+    if (aExact !== bExact) return aExact - bExact;
+    if (a.year !== b.year) return b.year - a.year;
+    const make = a.make.localeCompare(b.make);
+    if (make !== 0) return make;
+    return a.model.localeCompare(b.model);
+  });
+  return hits.slice(0, limit);
+}
+
+/** The typed string is one catalog row, or it equals that row's year, make, and model. */
+export function resolveVehicleQuery(seed: VehicleSeed, query: string): VehicleCatalogRow | null {
+  const q = query.trim().toLowerCase().replace(/\s+/g, ' ');
+  if (!q) return null;
+  const parts = q.split(' ');
+  const hits = seed.catalog.filter((row) => {
+    const hay = vehicleLabel(row);
+    return parts.every((part) => hay.includes(part));
+  });
+  const exact = hits.filter((row) => vehicleLabel(row) === q);
+  if (exact.length === 1) return exact[0];
+  if (hits.length === 1) return hits[0];
+  return null;
+}
+
+/** First token when it is a model year. A miss still gets an age. */
+export function leadingVehicleYear(query: string, nowYear = new Date().getFullYear()): number | null {
+  const first = query.trim().split(/\s+/)[0] ?? '';
+  return parseYear(first, nowYear);
+}
+
+export interface VehicleIdentity {
+  name: string;
+  vehicleYear: number | null;
+  make: string | null;
+  model: string | null;
+  vehicleClass: VehicleClass;
+  mpg: number | null;
+  kwhPerMile: number | null;
+}
+
+/** A tap or a unique catalog match. Otherwise the typed name, class, and a leading year. */
+export function vehicleIdentityFromQuery(
+  seed: VehicleSeed,
+  query: string,
+  picked: VehicleCatalogRow | null,
+  fallbackClass: VehicleClass = 'car',
+): VehicleIdentity {
+  const chosen = picked ?? resolveVehicleQuery(seed, query);
+  if (chosen) {
+    return {
+      name: `${chosen.year} ${chosen.make} ${chosen.model}`,
+      vehicleYear: chosen.year,
+      make: chosen.make,
+      model: chosen.model,
+      vehicleClass: chosen.class,
+      mpg: chosen.mpg ?? null,
+      kwhPerMile: chosen.kwhPerMile ?? null,
+    };
+  }
+  const trimmed = query.trim();
+  return {
+    name: trimmed || 'Vehicle',
+    vehicleYear: leadingVehicleYear(trimmed),
+    make: null,
+    model: null,
+    vehicleClass: fallbackClass,
+    mpg: null,
+    kwhPerMile: null,
+  };
 }
 
 export function seedSources(bundle: SeedBundle): SourceRef[] {

@@ -15,6 +15,7 @@
       }
     },
     "android": {
+      "minSdkVersion": 25,
       "package": "app.assetaware.mobile",
       "allowBackup": false,
       "edgeToEdgeEnabled": true,

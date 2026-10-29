@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { useRouter } from 'expo-router';
 
 import { scenarioLabel, type ForecastResult, type Scenario } from '@asset-aware/forecast-engine';
 import { radius, space, type Palette } from '@/lib/theme';
@@ -126,9 +125,4 @@ function createStyles(colors: Palette) {
     opacity: 0.82,
   },
   });
-}
-
-export function useCompare() {
-  const router = useRouter();
-  return () => router.push('/compare');
 }

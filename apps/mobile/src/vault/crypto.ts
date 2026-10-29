@@ -112,23 +112,6 @@ async function aesKeyFromPin(pin: string, salt: Uint8Array): Promise<Uint8Array>
   return pbkdf2Async(sha256, pin, salt, { c: 120_000, dkLen: 32 });
 }
 
-/** v2 AES-GCM backup of a single JSON value. New saves use `encryptBackup`. */
-export async function encryptJson(payload: unknown, pin: string): Promise<string> {
-  const salt = randomBytes(16);
-  const nonce = randomBytes(12);
-  const key = await aesKeyFromPin(pin, salt);
-  const cipher = gcm(key, nonce);
-  const data = cipher.encrypt(toBytes(JSON.stringify(payload)));
-  return JSON.stringify({
-    v: 2,
-    alg: 'aes-256-gcm',
-    kdf: 'pbkdf2-sha256-120000',
-    salt: bytesToHex(salt),
-    nonce: bytesToHex(nonce),
-    data: bytesToHex(data),
-  });
-}
-
 /** v1 XOR backup. Tests and the old-import path use this. The app does not save it. */
 export async function encryptLegacyXor(payload: unknown, pin: string): Promise<string> {
   const salt = bytesToHex(randomBytes(16));

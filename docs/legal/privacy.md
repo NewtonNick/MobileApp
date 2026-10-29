@@ -8,7 +8,7 @@ When the database file is encrypted, the books are encrypted at rest. A developm
 
 The PIN stays in the device keystore, not in the household file. A backup file is encrypted with a passphrase you choose. If you forget the PIN and have no backup, the household cannot be opened.
 
-Erase everything deletes the database file, the PIN, and other secrets on this phone, and asks the bank-link service to drop this device when that service is configured.
+Erase everything deletes the database file, the PIN, and other secrets on this phone. It does not call the bank-link service. Device enrollment is not built.
 
 ZIP is used only for public cost tables. The app does not ask for a street address or a VIN.
 

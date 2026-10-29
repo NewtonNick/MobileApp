@@ -17,10 +17,12 @@ import {
   isLiability,
   isLiquid,
   openGoalSpecs,
+  parseMileage,
   parseMoney,
   parsePercentInput,
   parseYear,
   searchVehicles,
+  vehicleIdentityFromQuery,
   typicalAprPercent,
   type AccountType,
   type FireFlavor,
@@ -96,6 +98,9 @@ export default function OnboardingScreen() {
       (existingCar ? [existingCar.vehicleYear, existingCar.make, existingCar.model].filter(Boolean).join(' ') : ''),
   );
   const [carValue, setCarValue] = useState(saved?.carValue ?? (existingCar?.value != null ? String(existingCar.value) : ''));
+  const [carMileage, setCarMileage] = useState(
+    saved?.carMileage ?? (existingCar?.mileage != null ? String(existingCar.mileage) : ''),
+  );
   const [carClass, setCarClass] = useState<VehicleClass>(saved?.carClass ?? existingCar?.vehicleClass ?? 'car');
   const [picked, setPicked] = useState<(typeof hits)[0] | null>(null);
   const [skipCar, setSkipCar] = useState(saved?.skipCar ?? household?.hasVehicle === false);
@@ -151,6 +156,7 @@ export default function OnboardingScreen() {
         skipHouse,
         carQuery,
         carValue,
+        carMileage,
         carClass,
         skipCar,
         cash,
@@ -178,6 +184,7 @@ export default function OnboardingScreen() {
     skipHouse,
     carQuery,
     carValue,
+    carMileage,
     carClass,
     skipCar,
     cash,
@@ -283,16 +290,21 @@ export default function OnboardingScreen() {
       assets = assets.filter((a) => a.type !== 'vehicle');
     } else if (blocks.includes('car') && hasVehicle) {
       const prev = assets.find((a) => a.type === 'vehicle');
+      const typed = carQuery.trim();
+      const identity = vehicleIdentityFromQuery(seedBundle.vehicle, typed, picked, carClass);
+      const miles = carMileage.trim() ? parseMileage(carMileage) : null;
       const next = {
         id: prev?.id ?? 'car-1',
         type: 'vehicle' as const,
-        name: picked ? `${picked.year} ${picked.make} ${picked.model}` : carQuery || prev?.name || 'Vehicle',
+        name: typed ? identity.name : prev?.name || 'Vehicle',
         value: carValue ? parseMoney(carValue) : prev?.value ?? null,
-        vehicleYear: picked?.year ?? prev?.vehicleYear ?? null,
-        make: picked?.make ?? null,
-        model: picked?.model ?? null,
-        vehicleClass: picked?.class ?? carClass,
-        mileage: prev?.mileage ?? null,
+        vehicleYear: typed ? identity.vehicleYear : prev?.vehicleYear ?? null,
+        make: typed ? identity.make : prev?.make ?? null,
+        model: typed ? identity.model : prev?.model ?? null,
+        vehicleClass: typed ? identity.vehicleClass : prev?.vehicleClass ?? carClass,
+        mpg: typed ? identity.mpg : prev?.mpg ?? null,
+        kwhPerMile: typed ? identity.kwhPerMile : prev?.kwhPerMile ?? null,
+        mileage: miles,
         lastEditedAt: now,
         costOverrides: prev?.costOverrides,
       };
@@ -676,8 +688,8 @@ export default function OnboardingScreen() {
                     onChange={(v) => {
                       setCarQuery(v);
                       setPicked(null);
+                      setCarClass('car');
                     }}
-                    placeholder="2018 Civic"
                   />
                   {hits.map((hit) => (
                     <Card key={`${hit.year}-${hit.make}-${hit.model}`}>
@@ -694,6 +706,14 @@ export default function OnboardingScreen() {
                   ))}
                   {!hits.length && carQuery ? <Meta>No catalog match. Treating this as a {carClass}.</Meta> : null}
                   <Field label="Vehicle value" value={carValue} onChange={setCarValue} keyboardType="decimal-pad" placeholder="14000" />
+                  <Field
+                    label="Mileage"
+                    hint="Optional. Leave it blank if you are not sure."
+                    value={carMileage}
+                    onChange={setCarMileage}
+                    keyboardType="number-pad"
+                    placeholder="72000"
+                  />
                 </>
               )}
               <Button

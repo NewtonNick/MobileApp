@@ -15,7 +15,8 @@ import { emptyRealHousehold, normalizeHousehold, previewHousehold } from './prev
 import { applyZMove, compareSequence, extraMonthly, otherJobStandings, withDebtFirst } from './sequence';
 import { projectCollision, standing } from './standing';
 import { livingBriefing } from './briefing';
-import { searchVehicles } from './lookups';
+import { leadingVehicleYear, resolveVehicleQuery, searchVehicles, vehicleIdentityFromQuery, vehicleMaintMultiplier } from './lookups';
+import { vehicleRunningCost } from './drivers';
 import { DEFAULT_BUFFER_MONTHS, DEFAULT_JOB_CLASS, PREVIEW_HOUSEHOLD_ID } from './types';
 import type { SeedBundle } from './seed-types';
 import type { HouseholdInput } from './types';
@@ -111,10 +112,116 @@ describe('debt linking', () => {
 });
 
 describe('vehicle search', () => {
-  it('finds 2018 civic', () => {
+  it('does not list a default make before anyone types', () => {
     const seed = loadSeed();
-    const hits = searchVehicles(seed.vehicle, '2018 civic');
-    assert.ok(hits.some((h) => h.model.toLowerCase().includes('civic')));
+    assert.deepEqual(searchVehicles(seed.vehicle, ''), []);
+    assert.deepEqual(searchVehicles(seed.vehicle, '   '), []);
+  });
+
+  it('finds 2018 civic and a 2000 model with a class and an economy figure', () => {
+    const seed = loadSeed();
+    const recent = searchVehicles(seed.vehicle, '2018 civic');
+    assert.ok(recent.some((hit) => hit.year === 2018 && hit.model.toLowerCase().includes('civic') && hit.class === 'car'));
+    const old = searchVehicles(seed.vehicle, '2000 honda civic');
+    const civic = old.find((hit) => hit.year === 2000 && hit.make === 'Honda' && hit.model === 'Civic');
+    assert.ok(civic);
+    assert.equal(civic.class, 'car');
+    assert.ok((civic.mpg ?? 0) > 0);
+  });
+
+  it('ranks a typed year ahead of newer model years', () => {
+    const seed = loadSeed();
+    const newest = searchVehicles(seed.vehicle, 'camry', 6);
+    assert.ok(newest.length >= 2);
+    for (let i = 1; i < newest.length; i++) assert.ok(newest[i - 1].year >= newest[i].year);
+    assert.ok(newest[0].year >= 2020);
+    const exact = searchVehicles(seed.vehicle, '2000 camry', 6);
+    assert.equal(exact[0].year, 2000);
+    assert.ok(exact[0].year < newest[0].year);
+  });
+
+  it('keeps the motorcycle and rv samples searchable', () => {
+    const seed = loadSeed();
+    assert.ok(searchVehicles(seed.vehicle, 'harley').some((hit) => hit.class === 'motorcycle'));
+    assert.ok(searchVehicles(seed.vehicle, 'winnebago').some((hit) => hit.class === 'rv'));
+  });
+
+  it('resolves one catalog row and still reads a leading year on a miss', () => {
+    const seed = loadSeed();
+    const civic = resolveVehicleQuery(seed.vehicle, '2000 Honda Civic');
+    assert.equal(civic?.year, 2000);
+    assert.equal(civic?.make, 'Honda');
+    assert.equal(resolveVehicleQuery(seed.vehicle, 'civic'), null);
+    assert.equal(leadingVehicleYear('2004 not a listed model'), 2004);
+    assert.equal(leadingVehicleYear('camry'), null);
+    const identity = vehicleIdentityFromQuery(seed.vehicle, '2004 not a listed model', null);
+    assert.equal(identity.vehicleYear, 2004);
+    assert.equal(identity.make, null);
+    assert.equal(identity.vehicleClass, 'car');
+    assert.equal(identity.mpg, null);
+  });
+});
+
+describe('vehicle estimates', () => {
+  it('a 2000 car uses the age band instead of the unknown-age bump', () => {
+    const seed = loadSeed();
+    const year = 2000;
+    const h = emptyRealHousehold('10001');
+    h.hasVehicle = true;
+    h.assets = [
+      {
+        id: 'car-1',
+        type: 'vehicle',
+        name: '2000 car',
+        value: 2000,
+        vehicleYear: year,
+        vehicleClass: 'car',
+        mileage: null,
+        lastEditedAt: new Date().toISOString(),
+      },
+    ];
+    const events = plannedEvents(h, seed, 'realistic');
+    const maint = events.find((event) => event.key === 'vehicle:car-1:maint');
+    assert.ok(maint);
+    const age = new Date().getFullYear() - year;
+    const aged = vehicleMaintMultiplier(seed.vehicle, age, null);
+    const unknown = vehicleMaintMultiplier(seed.vehicle, null, null);
+    assert.ok(aged > unknown);
+    assert.equal(aged, 1.55 * 1.1);
+    const annual = 1950 * aged;
+    assert.ok(Math.abs(maint.cost * 12 - annual) < 0.05);
+  });
+
+  it('an electricity-only row uses catalog kWh instead of the flat fuel fallback', () => {
+    const seed = loadSeed();
+    const row = seed.vehicle.catalog.find(
+      (item) => item.class === 'ev' && item.kwhPerMile != null && Math.abs(item.kwhPerMile - 0.3) > 0.02,
+    );
+    assert.ok(row);
+    assert.ok(row.kwhPerMile);
+    const identity = vehicleIdentityFromQuery(seed.vehicle, `${row.year} ${row.make} ${row.model}`, null);
+    assert.equal(identity.vehicleClass, 'ev');
+    assert.equal(identity.kwhPerMile, row.kwhPerMile);
+    const cost = vehicleRunningCost(
+      {
+        id: 'car-ev',
+        type: 'vehicle',
+        name: identity.name,
+        value: 20000,
+        vehicleYear: row.year,
+        make: row.make,
+        model: row.model,
+        vehicleClass: 'ev',
+        lastEditedAt: new Date().toISOString(),
+      },
+      seed,
+    );
+    const price = seed.macro.electricityPricePerKwh ?? 0.16;
+    const expected = (12_000 * row.kwhPerMile * price) / 12;
+    const fallback = (12_000 * 0.3 * price) / 12;
+    assert.ok(Math.abs(cost.fuelMonthly - expected) < 0.05);
+    assert.ok(Math.abs(cost.fuelMonthly - fallback) > 1);
+    assert.ok(Math.abs(cost.fuelMonthly - 160) > 1);
   });
 });
 

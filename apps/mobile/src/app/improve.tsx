@@ -20,6 +20,7 @@ import {
   parsePercentInput,
   parseYear,
   searchVehicles,
+  vehicleIdentityFromQuery,
   typicalAprPercent,
   type AccountType,
   type HouseholdInput,
@@ -192,8 +193,8 @@ export default function ImproveScreen() {
               onChangeText={(v) => {
                 setCarQuery(v);
                 setPicked(null);
+                setCarClass('car');
               }}
-              placeholder="2018 Civic"
               placeholderTextColor={colors.muted}
               style={field}
             />
@@ -220,13 +221,16 @@ export default function ImproveScreen() {
                   setError('That has to be a number, like 400 or $1,200.');
                   return;
                 }
+                const identity = vehicleIdentityFromQuery(seedBundle.vehicle, carQuery, picked, carClass);
                 upsertAsset('vehicle', {
-                  name: picked ? `${picked.year} ${picked.make} ${picked.model}` : carQuery || 'Vehicle',
+                  name: identity.name,
                   value,
-                  vehicleYear: picked?.year ?? null,
-                  make: picked?.make ?? null,
-                  model: picked?.model ?? null,
-                  vehicleClass: picked?.class ?? carClass,
+                  vehicleYear: identity.vehicleYear,
+                  make: identity.make,
+                  model: identity.model,
+                  vehicleClass: identity.vehicleClass,
+                  mpg: identity.mpg,
+                  kwhPerMile: identity.kwhPerMile,
                 });
               }}
             />

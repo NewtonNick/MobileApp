@@ -1,11 +1,9 @@
-import { leftoverOf } from './leftover';
+import { leftoverOf } from './money';
 import { hasHouse, hasVehicle } from './ownership';
 import { homePathParams, macroParams } from './lookups';
 import type { SeedBundle } from './seed-types';
 import type { AccountInput, EventHit, ForecastResult, HouseholdInput, PercentileTriple, Scenario } from './types';
 import { isInvestment, isLiability } from './types';
-
-export { leftoverOf } from './leftover';
 
 export const OVERLAY_IDS = [
   'paycheck_gap',

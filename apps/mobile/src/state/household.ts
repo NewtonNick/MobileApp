@@ -1,5 +1,4 @@
 import {
-  emptyRealHousehold,
   findDuplicateGuesses,
   normalizeHousehold,
   openGoalBoard,
@@ -209,15 +208,7 @@ export function saveAll(input: { household?: HouseholdInput; settings?: AppSetti
 }
 
 export function startPreview(jobClass?: JobClass): HouseholdInput {
-  const h = previewHousehold('10001', jobClass);
-  saveHousehold(h);
-  return h;
-}
-
-export function startReal(zip = ''): HouseholdInput {
-  const h = emptyRealHousehold(zip);
-  saveHousehold(h);
-  return h;
+  return previewHousehold('10001', jobClass);
 }
 
 export function assertNoPreviewLeak(h: HouseholdInput): void {

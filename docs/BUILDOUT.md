@@ -85,11 +85,11 @@ Do not rebuild these. A complaint that matches a row here is a device-QA miss or
 ## Q04 — The SQLite file is encrypted at rest
 
 **Backlog:** P1.  
-**Status:** open. After Q03, so a plain export exists before the on-device file format changes.
+**Status:** in code, not proved on a device. The native build turns SQLCipher on. A release build that cannot encrypt the file does not open. A dev build that cannot may seal each value instead.
 
-**Failure.** The backup file is AES-256-GCM. The SQLite file is still expo-sqlite, readable on a device that is unlocked. People who left Mint and Empower over data handling will notice.
+**Failure.** People who left Mint and Empower over data handling will notice if a release build is still storing a readable database file.
 
-**Target.** Replace plain `expo-sqlite` with SQLCipher-class storage. Books, PIN, and the hired date survive export, wipe, and import.
+**Target.** The database file is SQLCipher. Books, PIN, and the hired date survive export, wipe, and import.
 
 **Done when.** The database file is encrypted. Wipe the app, import the encrypted backup, and the household and seed vintage match. Standing is still computed, not stored.
 

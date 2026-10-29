@@ -1,10 +1,17 @@
-"""Refresh data/seed/*.json from public sources. Falls back to existing files."""
+"""Restamp data/seed/*.json. Does not rebuild the cited cost tables."""
 
 from __future__ import annotations
 
+import csv
+import io
 import json
+import ssl
+import statistics
+import subprocess
 import sys
+import urllib.error
 import urllib.request
+from collections import Counter, defaultdict
 from datetime import date
 from pathlib import Path
 
@@ -17,29 +24,260 @@ def load(name: str) -> dict:
 
 
 def save(name: str, payload: dict) -> None:
-    (SEED / name).write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    path = SEED / name
+    if path.exists():
+        try:
+            current = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            current = None
+        if current == payload:
+            return
+    path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def _ssl_failure(exc: BaseException) -> bool:
+    reason = getattr(exc, "reason", None)
+    return isinstance(reason, ssl.SSLError) or "CERTIFICATE_VERIFY_FAILED" in str(exc)
+
+
+def _fetch_with_curl(url: str, timeout: int) -> bytes:
+    """Windows Python often has no CA bundle. curl.exe uses the OS certificate store."""
+    try:
+        completed = subprocess.run(
+            ["curl.exe", "-fsSL", "--max-time", str(timeout), "-A", "asset-aware-etl/0.1", url],
+            check=False,
+            capture_output=True,
+        )
+    except FileNotFoundError as exc:
+        raise urllib.error.URLError("certificate check failed and curl.exe was not available") from exc
+    if completed.returncode != 0:
+        detail = completed.stderr.decode("utf-8", errors="replace").strip()
+        raise urllib.error.URLError(detail or f"curl exited {completed.returncode}")
+    return completed.stdout
 
 
 def fetch(url: str, timeout: int = 30) -> bytes:
     req = urllib.request.Request(url, headers={"User-Agent": "asset-aware-etl/0.1"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return resp.read()
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return resp.read()
+    except urllib.error.URLError as exc:
+        if not _ssl_failure(exc):
+            raise
+        return _fetch_with_curl(url, timeout)
+
+
+EPA_CATALOG_URL = "https://www.fueleconomy.gov/feg/epadata/vehicles.csv"
+EPA_MIN_YEAR = 2000
+# A collapsed 2000–present list is thousands of rows. Fewer than this means the file was unusable.
+EPA_MIN_ROWS = 1000
+
+# Light-duty file has no motorcycle or RV rows. These stay searchable and are not defaults.
+NON_EPA_SAMPLES = [
+    {"year": 2022, "make": "Harley-Davidson", "model": "Sportster", "class": "motorcycle", "mpg": 48},
+    {"year": 2019, "make": "Winnebago", "model": "Minnie", "class": "rv", "mpg": 10},
+]
+
+
+def decode_epa(raw: bytes) -> str:
+    for encoding in ("utf-8-sig", "latin-1"):
+        try:
+            return raw.decode(encoding)
+        except UnicodeDecodeError:
+            continue
+    return raw.decode("utf-8", errors="replace")
+
+
+def map_vclass(vclass: str) -> str | None:
+    text = vclass.strip().lower()
+    if not text:
+        return None
+    if "pickup" in text or text.endswith("truck") or text.endswith("trucks"):
+        return "truck"
+    if "van" in text:
+        return "van"
+    if "sport utility" in text or "suv" in text:
+        return "suv"
+    if "car" in text or "seater" in text or "wagon" in text:
+        return "car"
+    return None
+
+
+def parse_float(raw: str) -> float | None:
+    text = (raw or "").strip()
+    if not text:
+        return None
+    try:
+        value = float(text)
+    except ValueError:
+        return None
+    if not value > 0:
+        return None
+    return value
+
+
+def electricity_kwh_per_mile(comb_e: float | None, city_e: float | None, highway_e: float | None) -> float | None:
+    """EPA electricity columns are kWh per 100 miles. Combined wins; city and highway are the fallback."""
+    if comb_e is not None:
+        hundred = comb_e
+    elif city_e is not None and highway_e is not None:
+        hundred = (city_e + highway_e) / 2
+    else:
+        hundred = city_e if city_e is not None else highway_e
+    if hundred is None:
+        return None
+    per_mile = hundred / 100
+    if per_mile < 0.05 or per_mile > 1:
+        return None
+    return per_mile
+
+
+def liquid_mpg(fuel1: str, fuel2: str, comb08: float | None, comb_a08: float | None) -> float | None:
+    """Gasoline or diesel MPG. Plug-in rows use the charge-sustaining figure, not MPGe."""
+    if fuel1 == "electricity" and fuel2:
+        mpg = comb_a08
+    else:
+        mpg = comb08
+    if mpg is None or mpg < 5 or mpg > 150:
+        return None
+    return mpg
+
+
+def build_epa_catalog(raw: bytes) -> tuple[list[dict], Counter]:
+    text = decode_epa(raw)
+    reader = csv.DictReader(io.StringIO(text))
+    fields = set(reader.fieldnames or [])
+    required = {"year", "make", "model", "VClass", "fuelType1", "comb08"}
+    missing = required - fields
+    if missing:
+        raise ValueError(f"vehicles.csv missing columns: {', '.join(sorted(missing))}")
+
+    groups: dict[tuple[int, str, str], dict] = defaultdict(
+        lambda: {"electric": [], "mpg": [], "classes": []}
+    )
+    unmapped: Counter = Counter()
+
+    for record in reader:
+        try:
+            year = int((record.get("year") or "").strip())
+        except ValueError:
+            continue
+        if year < EPA_MIN_YEAR:
+            continue
+        make = (record.get("make") or "").strip()
+        model = (record.get("model") or "").strip()
+        if not make or not model:
+            continue
+        fuel1 = (record.get("fuelType1") or "").strip().lower()
+        fuel2 = (record.get("fuelType2") or "").strip().lower()
+        bucket = groups[(year, make, model)]
+        if fuel1 == "electricity" and not fuel2:
+            kwh = electricity_kwh_per_mile(
+                parse_float(record.get("combE") or ""),
+                parse_float(record.get("cityE") or ""),
+                parse_float(record.get("highwayE") or ""),
+            )
+            bucket["electric"].append(kwh)
+            continue
+        body = map_vclass(record.get("VClass") or "")
+        if body is None:
+            unmapped[(record.get("VClass") or "").strip() or "(blank)"] += 1
+        else:
+            bucket["classes"].append(body)
+        mpg = liquid_mpg(
+            fuel1,
+            fuel2,
+            parse_float(record.get("comb08") or ""),
+            parse_float(record.get("combA08") or ""),
+        )
+        if mpg is not None:
+            bucket["mpg"].append(mpg)
+
+    catalog: list[dict] = []
+    for (year, make, model), bucket in groups.items():
+        electric = bucket["electric"]
+        if electric and not bucket["classes"] and not bucket["mpg"]:
+            row: dict = {"year": year, "make": make, "model": model, "class": "ev"}
+            measured = [kwh for kwh in electric if kwh is not None]
+            if measured:
+                row["kwhPerMile"] = round(statistics.median(measured), 3)
+            catalog.append(row)
+            continue
+        if not bucket["classes"]:
+            continue
+        counts = Counter(bucket["classes"])
+        body = sorted(counts.items(), key=lambda item: (-item[1], item[0]))[0][0]
+        row = {"year": year, "make": make, "model": model, "class": body}
+        if bucket["mpg"]:
+            row["mpg"] = int(statistics.median(bucket["mpg"]) + 0.5)
+        catalog.append(row)
+
+    have = {(row["year"], row["make"], row["model"]) for row in catalog}
+    for sample in NON_EPA_SAMPLES:
+        key = (sample["year"], sample["make"], sample["model"])
+        if key not in have:
+            catalog.append(dict(sample))
+    catalog.sort(key=lambda row: (row["make"].lower(), row["model"].lower(), -row["year"]))
+    return catalog, unmapped
+
+
+def stamp_epa_source(vehicle: dict) -> None:
+    sources = vehicle.setdefault("sources", [])
+    for source in sources:
+        url = source.get("url") or ""
+        label = source.get("source") or ""
+        if "fueleconomy.gov" in url or "EPA" in label:
+            source["source"] = (
+                "EPA fueleconomy.gov year/make/model catalog, one row per model year from 2000 "
+                "through the latest published year"
+            )
+            source["vintage"] = date.today().isoformat()
+            source["url"] = EPA_CATALOG_URL
+            source["license"] = "U.S. government public domain"
+            return
+    sources.append(
+        {
+            "source": (
+                "EPA fueleconomy.gov year/make/model catalog, one row per model year from 2000 "
+                "through the latest published year"
+            ),
+            "vintage": date.today().isoformat(),
+            "url": EPA_CATALOG_URL,
+            "license": "U.S. government public domain",
+        }
+    )
 
 
 def refresh_epa_catalog(vehicle: dict) -> int:
-    """Pull a compact EPA year/make/model list when the service is reachable."""
-    url = "https://www.fueleconomy.gov/ws/rest/vehicle/menu/year"
+    """Collapse EPA vehicles.csv to one row per year, make, and model from 2000 onward."""
     try:
-        raw = fetch(url)
+        raw = fetch(EPA_CATALOG_URL, timeout=120)
     except Exception as exc:  # noqa: BLE001
-        print(f"EPA year list skipped: {exc}")
+        print(f"EPA catalog skipped: {exc}")
         return 0
-    # Keep existing catalog if the XML/JSON shape is unexpected.
     if not raw:
+        print("EPA catalog skipped: empty download")
         return 0
-    vehicle.setdefault("sources", [])
-    print("EPA menu reached; catalog left as curated subset (full dump is huge).")
-    return 0
+    try:
+        catalog, unmapped = build_epa_catalog(raw)
+    except Exception as exc:  # noqa: BLE001
+        print(f"EPA catalog skipped: {exc}")
+        return 0
+    if len(catalog) < EPA_MIN_ROWS:
+        print(f"EPA catalog skipped: only {len(catalog)} rows, keeping the existing list")
+        return 0
+    vehicle["catalog"] = catalog
+    stamp_epa_source(vehicle)
+    years = [row["year"] for row in catalog]
+    counts = Counter(row["class"] for row in catalog)
+    print(
+        f"EPA catalog: {len(catalog)} rows, {min(years)}–{max(years)}, "
+        + ", ".join(f"{name} {counts[name]}" for name in CLASS_ORDER if counts[name])
+    )
+    if unmapped:
+        skipped = ", ".join(f"{name} ({n})" for name, n in unmapped.most_common(8))
+        print(f"Unmapped EPA body classes left out of non-electric rows: {skipped}")
+    return len(catalog)
 
 
 CLASS_ORDER = ["car", "suv", "truck", "van", "ev", "motorcycle", "rv"]

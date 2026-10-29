@@ -1,4 +1,4 @@
-import { formatUsd } from './engine';
+import { formatUsd } from './money';
 import { labelFromMonthKey } from './month';
 import type { NextBest } from './jobs';
 import type { StandingView } from './types';

@@ -11,7 +11,6 @@
     { "name": "react-native-screens", "license": "MIT" },
     { "name": "react-native-svg", "license": "MIT" },
     { "name": "@noble/hashes", "license": "MIT" },
-    { "name": "@noble/ciphers", "license": "MIT" },
-    { "name": "drizzle-orm", "license": "Apache-2.0" }
+    { "name": "@noble/ciphers", "license": "MIT" }
   ]
 }
